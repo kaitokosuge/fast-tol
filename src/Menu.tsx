@@ -9,7 +9,7 @@ export default function BottomDrawerMenu() {
 
 	// 初期レンダリング時に画面の高さを基にメニューの高さを設定
 	useEffect(() => {
-		menuHeight.current = window.innerHeight * 0.95; // 画面の90%の高さ
+		menuHeight.current = window.innerHeight * 0.95; // 画面の95%の高さ
 		setTranslateY(menuHeight.current); // 初期状態でメニューを隠す
 	}, []);
 
@@ -85,7 +85,7 @@ export default function BottomDrawerMenu() {
 
 			{/* メニュー部分 */}
 			<div
-				className="absolute bottom-0 left-0 w-full bg-gray-800 text-white z-20"
+				className="absolute bottom-0 left-0 w-[80%] bg-gray-800 text-white z-20 rounded-t-[20px] px-10"
 				style={{
 					height: `${menuHeight.current}px`,
 					transform: `translateY(${translateY}px)`,
@@ -101,12 +101,17 @@ export default function BottomDrawerMenu() {
 				onTouchMove={(e) => handleMove(e.touches[0].clientY)} // タッチ移動
 				onTouchEnd={handleEnd} // タッチ終了
 			>
-				<div className="p-4">Menu Content</div>
+				<div className="overflow-y-scroll h-[900px]">
+					<div className="fixed top-5 right-5 w-[100px] h-[1px] bg-gray-500"></div>
+					<div className="p-4 bg-black w-full h-[1200px]">Menu Content</div>
+					<div className="p-4 bg-black w-full h-[1200px] mt-[1000px]">
+						Menu Content2
+					</div>
+				</div>
 			</div>
 
 			{/* メインコンテンツ */}
 			<div className="h-full bg-gray-100">
-				<h1 className="text-center p-4">Main Content</h1>
 				<button
 					className="fixed bottom-4 left-4 bg-blue-500 text-white px-4 py-2 rounded"
 					onClick={() => {
