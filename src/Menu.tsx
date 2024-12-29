@@ -2,14 +2,17 @@ import { useState, useRef } from "react";
 
 export default function BottomDrawerMenu() {
 	const [translateY, setTranslateY] = useState(300); // 初期位置 (閉じた状態)
+	const [isMenuOpen, setIsMenuOpen] = useState(false); // メニューが開いているかどうか
 	const isDragging = useRef(false); // ドラッグ中かどうかの状態
 	const startY = useRef(0); // ドラッグ開始時のY座標
 
+	// メニューをドラッグできるように開始
 	const handleStart = (clientY: number) => {
 		startY.current = clientY;
 		isDragging.current = true; // ドラッグを開始
 	};
 
+	// ドラッグ移動中の処理
 	const handleMove = (clientY: number) => {
 		if (!isDragging.current) return;
 		const deltaY = clientY - startY.current; // 開始位置からの移動量
@@ -18,30 +21,45 @@ export default function BottomDrawerMenu() {
 		startY.current = clientY; // 開始位置を更新
 	};
 
+	// ドラッグ終了時の処理
 	const handleEnd = () => {
+		if (!isDragging.current) return;
 		isDragging.current = false; // ドラッグ終了
-		// ドロワーのスナップ (近い位置に移動)
-		setTranslateY((prev) => (prev < 150 ? 0 : 300)); // 150px を境界
+
+		// スナップ動作: 開く/閉じるの状態を切り替える
+		if (translateY > 150) {
+			setTranslateY(300); // 閉じる
+			setIsMenuOpen(false); // メニューを閉じる
+		} else {
+			setTranslateY(0); // 開いたまま
+			setIsMenuOpen(true); // メニューを開く
+		}
 	};
 
 	return (
 		<div
 			className="relative h-screen overflow-hidden"
-			onMouseDown={(e) => handleStart(e.clientY)}
-			onMouseMove={(e) => e.buttons === 1 && handleMove(e.clientY)} // マウス移動中
-			onMouseUp={handleEnd} // マウスアップ時
-			onTouchStart={(e) => handleStart(e.touches[0].clientY)} // タッチ開始
-			onTouchMove={(e) => handleMove(e.touches[0].clientY)} // タッチ移動
-			onTouchEnd={handleEnd} // タッチ終了
-		>
-			{/* ドロワーメニュー */}
+			style={{
+				overflow: isMenuOpen ? "hidden" : "auto", // メニューが開いているときはスクロール禁止
+			}}>
+			{/* メニュー部分 */}
 			<div
 				className="absolute bottom-0 left-0 w-full bg-gray-800 text-white"
 				style={{
 					height: "300px",
 					transform: `translateY(${translateY}px)`,
 					transition: isDragging.current ? "none" : "transform 0.1s ease-out", // ドラッグ中は即時反映
-				}}>
+				}}
+				// ドラッグイベントをメニュー部分に限定
+				onMouseDown={(e) => handleStart(e.clientY)} // ドラッグ開始
+				onMouseMove={(e) => {
+					if (e.buttons === 1) handleMove(e.clientY); // マウス移動中
+				}}
+				onMouseUp={handleEnd} // マウスアップ時
+				onTouchStart={(e) => handleStart(e.touches[0].clientY)} // タッチ開始
+				onTouchMove={(e) => handleMove(e.touches[0].clientY)} // タッチ移動
+				onTouchEnd={handleEnd} // タッチ終了
+			>
 				<div className="p-4">Menu Content</div>
 			</div>
 
@@ -50,8 +68,11 @@ export default function BottomDrawerMenu() {
 				<h1 className="text-center p-4">Main Content</h1>
 				<button
 					className="fixed bottom-4 left-4 bg-blue-500 text-white px-4 py-2 rounded"
-					onClick={() => setTranslateY((prev) => (prev === 300 ? 0 : 300))}>
-					Toggle Menu
+					onClick={() => {
+						setTranslateY(0); // メニューを開く
+						setIsMenuOpen(true); // メニューを開いている状態にする
+					}}>
+					Open Menu
 				</button>
 			</div>
 		</div>
