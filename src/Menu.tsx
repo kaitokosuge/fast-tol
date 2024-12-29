@@ -1,10 +1,24 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function BottomDrawerMenu() {
 	const [translateY, setTranslateY] = useState(300); // 初期位置 (閉じた状態)
 	const [isMenuOpen, setIsMenuOpen] = useState(false); // メニューが開いているかどうか
 	const isDragging = useRef(false); // ドラッグ中かどうかの状態
 	const startY = useRef(0); // ドラッグ開始時のY座標
+
+	useEffect(() => {
+		// メニューが閉じているときもスクロールを無効にする
+		if (!isMenuOpen) {
+			document.body.style.overflow = "hidden";
+		} else {
+			document.body.style.overflow = "auto";
+		}
+
+		// クリーンアップ: コンポーネントがアンマウントされるときにスクロールの設定を戻す
+		return () => {
+			document.body.style.overflow = "auto";
+		};
+	}, [isMenuOpen]);
 
 	// メニューをドラッグできるように開始
 	const handleStart = (clientY: number) => {
@@ -38,9 +52,9 @@ export default function BottomDrawerMenu() {
 
 	return (
 		<div
-			className="relative h-screen overflow-hidden"
+			className="relative h-screen"
 			style={{
-				overflow: isMenuOpen ? "hidden" : "auto", // メニューが開いているときはスクロール禁止
+				overflow: "hidden", // 初期状態でスクロールを無効化
 			}}>
 			{/* メニュー部分 */}
 			<div

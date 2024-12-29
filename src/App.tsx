@@ -16,7 +16,7 @@ function App() {
 	// 	if (value === "vscode") await postVscode();
 	// };
 	return (
-		<div className="overflow-hidden">
+		<div className="overflow-hidden w-screen max-h-screen">
 			{/* <button onClick={() => handleClickOption("vscode")}>vscode再起動</button> */}
 			<DrawerMenu />
 		</div>
