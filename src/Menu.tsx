@@ -1,10 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 
 export default function BottomDrawerMenu() {
-	const [translateY, setTranslateY] = useState(300); // 初期位置 (閉じた状態)
+	const [translateY, setTranslateY] = useState(0); // 初期位置 (閉じた状態)
 	const [isMenuOpen, setIsMenuOpen] = useState(false); // メニューが開いているかどうか
 	const isDragging = useRef(false); // ドラッグ中かどうかの状態
 	const startY = useRef(0); // ドラッグ開始時のY座標
+	const menuHeight = useRef(0); // メニューの高さ
+
+	// 初期レンダリング時に画面の高さを基にメニューの高さを設定
+	useEffect(() => {
+		menuHeight.current = window.innerHeight * 0.95; // 画面の90%の高さ
+		setTranslateY(menuHeight.current); // 初期状態でメニューを隠す
+	}, []);
 
 	useEffect(() => {
 		// メニューが開いているときは画面全体のスクロールを無効化
@@ -30,7 +37,10 @@ export default function BottomDrawerMenu() {
 	const handleMove = (clientY: number) => {
 		if (!isDragging.current) return;
 		const deltaY = clientY - startY.current; // 開始位置からの移動量
-		const newTranslateY = Math.min(300, Math.max(0, translateY + deltaY)); // 範囲制限 (0 ～ 300px)
+		const newTranslateY = Math.min(
+			menuHeight.current,
+			Math.max(0, translateY + deltaY)
+		); // 範囲制限 (0 ～ menuHeight)
 		setTranslateY(newTranslateY);
 		startY.current = clientY; // 開始位置を更新
 	};
@@ -41,8 +51,8 @@ export default function BottomDrawerMenu() {
 		isDragging.current = false; // ドラッグ終了
 
 		// スナップ動作: 開く/閉じるの状態を切り替える
-		if (translateY > 150) {
-			setTranslateY(300); // 閉じる
+		if (translateY > menuHeight.current / 4) {
+			setTranslateY(menuHeight.current); // 閉じる
 			setIsMenuOpen(false); // メニューを閉じる
 		} else {
 			setTranslateY(0); // 開いたまま
@@ -60,7 +70,7 @@ export default function BottomDrawerMenu() {
 			<div
 				className="absolute bottom-0 left-0 w-full bg-gray-800 text-white"
 				style={{
-					height: "300px",
+					height: `${menuHeight.current}px`,
 					transform: `translateY(${translateY}px)`,
 					transition: isDragging.current ? "none" : "transform 0.1s ease-out", // ドラッグ中は即時反映
 				}}
