@@ -60,19 +60,36 @@ export default function BottomDrawerMenu() {
 		}
 	};
 
+	// メニューの外側をクリックしたときにメニューを閉じる
+	const handleBackgroundClick = () => {
+		setTranslateY(menuHeight.current); // メニューを閉じる
+		setIsMenuOpen(false); // メニューを閉じている状態にする
+	};
+
 	return (
 		<div
 			className="relative h-screen"
 			style={{
 				overflow: "hidden", // 初期状態でスクロールを無効化
 			}}>
+			{/* メニュー背景部分（メニューが開いているときに表示） */}
+			{isMenuOpen && (
+				<div
+					className="absolute top-0 left-0 w-full h-full bg-gray-700 bg-opacity-50"
+					onClick={handleBackgroundClick} // クリックでメニューを閉じる
+					style={{
+						zIndex: 1, // メニューより下に表示
+					}}
+				/>
+			)}
+
 			{/* メニュー部分 */}
 			<div
-				className="absolute bottom-0 left-0 w-full bg-gray-800 text-white"
+				className="absolute bottom-0 left-0 w-full bg-gray-800 text-white z-20"
 				style={{
 					height: `${menuHeight.current}px`,
 					transform: `translateY(${translateY}px)`,
-					transition: isDragging.current ? "none" : "transform 0.1s ease-out", // ドラッグ中は即時反映
+					transition: isDragging.current ? "none" : "transform 0.2s ease-out", // ドラッグ中は即時反映
 				}}
 				// ドラッグイベントをメニュー部分に限定
 				onMouseDown={(e) => handleStart(e.clientY)} // ドラッグ開始
