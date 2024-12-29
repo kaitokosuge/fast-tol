@@ -7,8 +7,8 @@ export default function BottomDrawerMenu() {
 	const startY = useRef(0); // ドラッグ開始時のY座標
 
 	useEffect(() => {
-		// メニューが閉じているときもスクロールを無効にする
-		if (!isMenuOpen) {
+		// メニューが開いているときは画面全体のスクロールを無効化
+		if (isMenuOpen) {
 			document.body.style.overflow = "hidden";
 		} else {
 			document.body.style.overflow = "auto";
