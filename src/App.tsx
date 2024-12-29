@@ -1,5 +1,5 @@
 import "./App.css";
-import DrawerMenu from "./Menu";
+import Content from "./Content";
 
 function App() {
 	// const postVscode = async () => {
@@ -16,9 +16,9 @@ function App() {
 	// 	if (value === "vscode") await postVscode();
 	// };
 	return (
-		<div className="overflow-hidden w-screen max-h-screen">
+		<div className="h-screen overflow-y-scroll w-screen">
 			{/* <button onClick={() => handleClickOption("vscode")}>vscode再起動</button> */}
-			<DrawerMenu />
+			<Content />
 		</div>
 	);
 }

@@ -1,6 +1,14 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, ReactNode } from "react";
 
-export default function BottomDrawerMenu() {
+interface BottomDrawerMenuProps {
+	children: ReactNode; // メニュー内のコンテンツ
+	buttonContent: ReactNode; // ボタン内のコンテンツ
+}
+
+export default function BottomDrawerMenu({
+	children,
+	buttonContent,
+}: BottomDrawerMenuProps) {
 	const [translateY, setTranslateY] = useState(0); // 初期位置 (閉じた状態)
 	const [isMenuOpen, setIsMenuOpen] = useState(false); // メニューが開いているかどうか
 	const isDragging = useRef(false); // ドラッグ中かどうかの状態
@@ -67,60 +75,54 @@ export default function BottomDrawerMenu() {
 	};
 
 	return (
-		<div
-			className="relative h-screen"
-			style={{
-				overflow: "hidden", // 初期状態でスクロールを無効化
-			}}>
-			{/* メニュー背景部分（メニューが開いているときに表示） */}
-			{isMenuOpen && (
-				<div
-					className="absolute top-0 left-0 w-full h-full bg-gray-700 bg-opacity-50"
-					onClick={handleBackgroundClick} // クリックでメニューを閉じる
-					style={{
-						zIndex: 1, // メニューより下に表示
-					}}
-				/>
-			)}
-
-			{/* メニュー部分 */}
+		<>
 			<div
-				className="absolute bottom-0 left-0 w-[80%] bg-gray-800 text-white z-20 rounded-t-[20px] px-10"
 				style={{
-					height: `${menuHeight.current}px`,
-					transform: `translateY(${translateY}px)`,
-					transition: isDragging.current ? "none" : "transform 0.2s ease-out", // ドラッグ中は即時反映
+					overflow: "hidden", // 初期状態でスクロールを無効化
 				}}
-				// ドラッグイベントをメニュー部分に限定
-				onMouseDown={(e) => handleStart(e.clientY)} // ドラッグ開始
-				onMouseMove={(e) => {
-					if (e.buttons === 1) handleMove(e.clientY); // マウス移動中
-				}}
-				onMouseUp={handleEnd} // マウスアップ時
-				onTouchStart={(e) => handleStart(e.touches[0].clientY)} // タッチ開始
-				onTouchMove={(e) => handleMove(e.touches[0].clientY)} // タッチ移動
-				onTouchEnd={handleEnd} // タッチ終了
-			>
-				<div className="overflow-y-scroll h-[900px]">
-					<div className="fixed top-5 right-5 w-[100px] h-[1px] bg-gray-500"></div>
-					<div className="p-4 bg-black w-full h-[1200px]">Menu Content</div>
-					<div className="p-4 bg-black w-full h-[1200px] mt-[1000px]">
-						Menu Content2
+				className="absolute min-h-screen w-screen top-0 left-0 overflow-y-scroll">
+				{/* メニュー背景部分（メニューが開いているときに表示） */}
+				{isMenuOpen && (
+					<div
+						className="absolute top-0 left-0 w-full h-full bg-gray-700 bg-opacity-50"
+						onClick={handleBackgroundClick} // クリックでメニューを閉じる
+						style={{
+							zIndex: 2, // メニューより下に表示
+						}}
+					/>
+				)}
+				{/* メニュー部分 */}
+				<div
+					className="absolute bottom-0 left-0 w-[100%] bg-gray-800 text-white z-30 rounded-t-[20px] px-10"
+					style={{
+						height: `${menuHeight.current}px`,
+						transform: `translateY(${translateY}px)`,
+						transition: isDragging.current ? "none" : "transform 0.2s ease-out", // ドラッグ中は即時反映
+					}}
+					// ドラッグイベントをメニュー部分に限定
+					onMouseDown={(e) => handleStart(e.clientY)} // ドラッグ開始
+					onMouseMove={(e) => {
+						if (e.buttons === 1) handleMove(e.clientY); // マウス移動中
+					}}
+					onMouseUp={handleEnd} // マウスアップ時
+					onTouchStart={(e) => handleStart(e.touches[0].clientY)} // タッチ開始
+					onTouchMove={(e) => handleMove(e.touches[0].clientY)} // タッチ移動
+					onTouchEnd={handleEnd} // タッチ終了
+				>
+					<div className="overflow-y-scroll h-full">
+						<div className="fixed top-5 right-5 w-[100px] h-[1px] bg-gray-500"></div>
+						{children} {/* メニューのカスタマイズコンテンツ */}
 					</div>
 				</div>
 			</div>
-
-			{/* メインコンテンツ */}
-			<div className="h-full bg-gray-100">
-				<button
-					className="fixed bottom-4 left-4 bg-blue-500 text-white px-4 py-2 rounded"
-					onClick={() => {
-						setTranslateY(0); // メニューを開く
-						setIsMenuOpen(true); // メニューを開いている状態にする
-					}}>
-					Open Menu
-				</button>
-			</div>
-		</div>
+			<button
+				className="bg-blue-500 text-white px-4 py-2 rounded block mt-10 relative z-10"
+				onClick={() => {
+					setTranslateY(0); // メニューを開く
+					setIsMenuOpen(true); // メニューを開いている状態にする
+				}}>
+				{buttonContent} {/* ボタン内のコンテンツ */}
+			</button>
+		</>
 	);
 }
