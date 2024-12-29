@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 
 export default function BottomDrawerMenu() {
 	const [translateY, setTranslateY] = useState(300); // 初期位置 (閉じた状態)
